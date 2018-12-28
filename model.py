@@ -161,6 +161,15 @@ class Post:
         '''获取文章总数'''
         return db.query("SELECT COUNT(*) AS count FROM posts")[0].count
 
+    def query_hotness(self):
+        last_comments_time = db.query('''SELECT  comments.time AS ctime
+            FROM comments JOIN users
+            ON comments.user_id = users.id
+            where comments.id=(SELECT MAX(id) FROM comments WHERE commnets.id=%d)'''%self.id)
+        if last_comments_time:
+            
+
+
 class Comment:
     def __init__(self, post_id):
         '''一个Comment实例只对应一篇文章'''

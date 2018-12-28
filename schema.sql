@@ -10,8 +10,13 @@ USE forum;
 CREATE TABLE IF NOT EXISTS users
 (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL, # 不能改的账号
+    nickname VARCHAR(20), #
+    birthday VARCHAR(30),
+    gender VARCHAR(20),
+    age INT UNSIGNED,
     email VARCHAR(100) NOT NULL,
-    name VARCHAR(100) NOT NULL,
+    degree VARCHAR(20)
     password TEXT NOT NULL,
     picture TEXT NOT NULL,
     description TEXT,
@@ -25,9 +30,12 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS posts
 (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    part VARCHAR(20),
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     time TIMESTAMP DEFAULT NOW(),
+    click_count INT UNSIGNED,
+    reply_count INT UNSIGNED,
     user_id INT UNSIGNED,
     PRIMARY KEY(id),
     FOREIGN KEY(user_id) REFERENCES users(id)
@@ -40,8 +48,11 @@ CREATE TABLE IF NOT EXISTS comments
     content TEXT NOT NULL,
     time TIMESTAMP DEFAULT NOW(),
     user_id INT UNSIGNED,
+    title INT UNSIGNED,#回复还需要标题？
+    like_count INT UNSIGNED,
     parent_id INT UNSIGNED,
     quote_id INT UNSIGNED,
+    layer INT UNSIGNED,
     PRIMARY KEY(id),
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(parent_id) REFERENCES posts(id),

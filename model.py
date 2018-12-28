@@ -105,7 +105,8 @@ class Post:
         except Exception, e:
             print e
             return False
-
+    def top_10(self):
+        
     def view(self, id):
         '''获取id对应的文章'''
         posts = db.query('''SELECT posts.id, title, content, posts.time, user_id, users.name AS username, users.picture AS user_face

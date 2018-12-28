@@ -9,7 +9,7 @@ import settings
 # belong to zx & cyh
 # 连接MySQL数据库
 db = web.database(dbn='mysql', db='forum', user=settings.MYSQL_USERNAME, pw=settings.MYSQL_PASSWORD)
-part_name = ['A', 'B', 'C']
+
 
 class User:
     def new(self, email, username, password):
@@ -97,17 +97,7 @@ class Post:
             return db.insert('posts', title=title, content=content, user_id=user_id)
         else:
             return 0
-    def top_10_click_count(self):
-        posts = db.query('''SELECT posts.id
-                            FROM posts 
-                            ORDER BY click_count
-                            LIMIT 10 ''')
-        return posts
-    def top_10_reply_count(self):
-        posts = db.query('''SELECT posts.id
-                            FROM posts 
-                            ORDER BY reply_count
-                            LIMIT 10 ''')
+
     def update(self, id, title, content):
         try:
             db.update('posts', where='id=$id', title=title, content=content, vars=locals())
@@ -115,6 +105,7 @@ class Post:
         except Exception, e:
             print e
             return False
+    def top_10(self):
         
     def view(self, id):
         '''获取id对应的文章'''
@@ -170,16 +161,6 @@ class Post:
     def count(self):
         '''获取文章总数'''
         return db.query("SELECT COUNT(*) AS count FROM posts")[0].count
-
-    def query_hotness(self):
-        for part in part_name:
-            part_posts = db.query('''SELECT posts.time, posts.id, posts.user_id
-                FROM posts
-                where posts.part=%d''' % part)
-            for post in part_posts:
-                last_comment = Comment(post[id])
-
-
 
 class Comment:
     def __init__(self, post_id):
@@ -238,7 +219,6 @@ class Comment:
                                     ON comments.user_id = users.id
                                     WHERE comments.id=(SELECT MAX(id) FROM comments WHERE parent_id=%d)''' % self.__parent_id)
         if last_comments:
-            print(last_comments[0])
             return last_comments[0]
 
         return None
@@ -246,8 +226,3 @@ class Comment:
     def count(self):
         '''获取当前文章下面的评论总数'''
         return db.query("SELECT COUNT(*) AS count FROM comments WHERE parent_id=%d" % self.__parent_id)[0].count
-
-if __name__ == '__main__':
-    # post = Post().new('title', 10, 1)
-    # comment = Comment(2).new(10, 1, 1)
-    Comment(10).last()

@@ -115,7 +115,13 @@ class Post:
         except Exception, e:
             print e
             return False
+<<<<<<< HEAD
+
+=======
+    def top_10(self):
+        pass
         
+>>>>>>> 3d6a8d2c3bdfe0d795329398009b77b9d4bcc6e1
     def view(self, id):
         '''获取id对应的文章'''
         posts = db.query('''SELECT posts.id, title, content, posts.time, user_id, users.name AS username, users.picture AS user_face

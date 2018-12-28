@@ -97,7 +97,17 @@ class Post:
             return db.insert('posts', title=title, content=content, user_id=user_id)
         else:
             return 0
-
+    def top_10_click_count(self):
+        posts = db.query('''SELECT posts.id
+                            FROM posts 
+                            ORDER BY click_count
+                            LIMIT 10 ''')
+        return posts
+    def top_10_reply_count(self):
+        posts = db.query('''SELECT posts.id
+                            FROM posts 
+                            ORDER BY reply_count
+                            LIMIT 10 ''')
     def update(self, id, title, content):
         try:
             db.update('posts', where='id=$id', title=title, content=content, vars=locals())
@@ -105,8 +115,7 @@ class Post:
         except Exception, e:
             print e
             return False
-    def top_10(self):
-        
+
     def view(self, id):
         '''获取id对应的文章'''
         posts = db.query('''SELECT posts.id, title, content, posts.time, user_id, users.name AS username, users.picture AS user_face

@@ -208,9 +208,12 @@ class Comment:
                                         'quote_username': quote_username, 'quote_user_id': quote_user_id})
         return comments_with_quote
 
-    def new(self, content, user_id, quote_id):
+    def new(self, content, user_id, quote_id = -1):
         try:
-            return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id, quote_id=quote_id)
+            if quote_id == -1:
+                return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id)
+            else:
+                return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id, quote_id=quote_id)
         except Exception, e:
             print e
             return 0

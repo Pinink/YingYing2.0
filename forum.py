@@ -110,6 +110,7 @@ class Del:
 class View:
     def GET(self, post_id):
         post_id = int(post_id)
+        print("+++++++++++++++++")
         post = model.Post().view(post_id)
         if post:
             comment = model.Comment(int(post_id))
@@ -122,14 +123,17 @@ class View:
     def POST(self, post_id):
         # jQuery+Ajax实现无刷新回帖
         i = web.input()
+        print("i :",i)
         cur_user_id = model.User().current_id()
         web.header('Content-Type', 'application/json')
         if cur_user_id:
             comment = model.Comment(int(post_id))
             # 回帖成功：返回"回帖"+"引用贴"信息
-            if comment.new(i.content, cur_user_id, i.quote_id):
+            #print('_____________')
+            if comment.new(i.content, cur_user_id):
                 comments = comment.quote([comment.last()])
                 return json.dumps(util.comments_to_lis(comments))
+
         # 无权限：返回空
         return json.dumps([])
 

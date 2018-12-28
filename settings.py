@@ -13,7 +13,7 @@ POSTS_PER_PAGE = 10 # 每页显示10篇文章
 
 # 本地环境下的MySQL配置
 MYSQL_USERNAME = 'root'
-MYSQL_PASSWORD = '19980523a'
+MYSQL_PASSWORD = 'zx111111'
 
 ##### email服务器配置 #####
 import web

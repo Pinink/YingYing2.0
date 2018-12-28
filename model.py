@@ -6,6 +6,7 @@ import util
 import hashlib
 import settings
 
+# belong to zx
 # 连接MySQL数据库
 db = web.database(dbn='mysql', db='forum', user=settings.MYSQL_USERNAME, pw=settings.MYSQL_PASSWORD)
 

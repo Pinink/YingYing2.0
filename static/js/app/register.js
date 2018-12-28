@@ -14,7 +14,7 @@ function($, validator, common) {
                            $("form#register #username").next(),
                            function(val) {return val.match(common.username_pattern);},
                            "< 请输入帐号",
-                           "< 2-20个字符，字母、数字、下划线，字母开头");
+                           "< 2-20个字符，字母、数字、下划线开头");
 
             var password =
             validator.bind($("form#register #password"),

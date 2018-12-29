@@ -19,6 +19,16 @@ class User:
 
     def update(self, id, **kwd):
         try:
+            if 'nickname' in kwd and kwd['nickname']:
+                db.update('users', where='id = $id', name = kwd['name'], vars = locals())
+            if 'birthday' in kwd and kwd['birthday']:
+                db.update('users', where='id = $id', birthday = kwd['birthday'], vars = locals())
+            if 'gender' in kwd and kwd['gender']:
+                db.update('users', where='id = $id', gender = kwd['gender'], vars = locals())
+            if 'age' in kwd and kwd['age']:
+                db.update('users', where='id = $id', age = kwd['age'], vars = locals())
+            if 'degree' in kwd and kwd['degree']:
+                db.update('users', where='id = $id', degree = kwd['degree'], vars = locals())
             if 'email' in kwd and kwd['email']:
                 db.update('users', where='id=$id', email=kwd['email'], vars=locals())
 
@@ -31,7 +41,7 @@ class User:
 
             if 'description' in kwd and kwd['description']:
                 db.update('users', where='id=$id', description=kwd['description'], vars=locals())
-
+            
             return True
         except Exception, e:
             print e
@@ -94,20 +104,30 @@ class User:
 class Post:
     def new(self, title, content, user_id):
         if user_id:
-            return db.insert('posts', title=title, content=content, user_id=user_id)
+            return db.insert('posts', title=title, content=content, user_id=user_id,click_count = 0, reply_count = 0, part = 'A')
         else:
             return 0
-    def top_10_click_count(self):
+    @staticmethod
+    def top_10_click_count():
         posts = db.query('''SELECT posts.id
                             FROM posts 
-                            ORDER BY click_count
+                            ORDER BY click_count DESC
                             LIMIT 10 ''')
-        return posts
-    def top_10_reply_count(self):
+        if posts:
+            return posts[0]
+        else:
+            return None
+    @staticmethod
+    def top_10_reply_count():
         posts = db.query('''SELECT posts.id
                             FROM posts 
-                            ORDER BY reply_count
+                            ORDER BY reply_count DESC
                             LIMIT 10 ''')
+        if posts:
+            return posts[0]
+        else:
+            return None
+            
     def update(self, id, title, content):
         try:
             db.update('posts', where='id=$id', title=title, content=content, vars=locals())
@@ -140,7 +160,7 @@ class Post:
 
         # 获取从offset开始共per_page个post
         offset = (page - 1) * per_page
-        posts = db.query('''SELECT posts.id, title, posts.time, user_id, users.name AS username
+        posts = db.query('''SELECT posts.id, title, posts.time, user_id, click_count, users.name AS username
                             FROM posts JOIN users
                             ON posts.user_id = users.id
                             ORDER BY posts.id DESC
@@ -150,7 +170,8 @@ class Post:
             comment = Comment(p.id)
             last = comment.last()
             last_time = last.time if last else p.time
-            page_posts.append({'id': p.id, 'title': p.title, 'userid': p.user_id, 'username': p.username, 'comment_count': comment.count(), 'last_time': last_time})
+            # and click count
+            page_posts.append({'id': p.id, 'title': p.title, 'click_count':p.click_count,'userid': p.user_id, 'username': p.username, 'comment_count': comment.count(), 'last_time': last_time})
 
         # 计算总页数
         post_count = self.count()
@@ -212,6 +233,7 @@ class Comment:
         try:
             if quote_id == -1:
                 return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id)
+            # not quote_id !
             else:
                 return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id, quote_id=quote_id)
         except Exception, e:
@@ -252,6 +274,10 @@ class Comment:
         return db.query("SELECT COUNT(*) AS count FROM comments WHERE parent_id=%d" % self.__parent_id)[0].count
 
 if __name__ == '__main__':
-    # post = Post().new('title', 10, 1)
-    # comment = Comment(2).new(10, 1, 1)
-    Comment(10).last()
+    post = Post().new('title', 10, 1)
+    comment = Comment(3).new(10, 1)
+    a = Comment(3).last()
+    b = Post.top_10_reply_count()
+    print(b[0])
+    #print(a)
+    #print(a[0]['username'])

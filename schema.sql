@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users
     reply_number INT UNSIGNED,
     age INT UNSIGNED,
     email VARCHAR(100) NOT NULL,
-    degree VARCHAR(20)
+    degree VARCHAR(20),
     password TEXT NOT NULL,
     picture TEXT NOT NULL,
     description TEXT,

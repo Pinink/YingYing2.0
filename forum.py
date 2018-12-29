@@ -182,7 +182,7 @@ class Profile:
             if user_id == model.User().current_id():
                 return titled_render(status['username']).master_profile(status['username'], status['picture'], status['description'])
             else:
-                return titled_render(status['username']).user_profile(status['username'], status['picture'], status['description'])
+                return titled_render(status['username']).user_profile(status['username'], status['picture'], status['description'],model.Post().digest_list(user_id))
         else:
             raise web.notfound()
 

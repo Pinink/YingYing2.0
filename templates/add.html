@@ -1,8 +1,7 @@
 $def with()
 
 <form id="new_post" action="" method="post">
-<table>
-<tbody>
+<div>
     <tr>
         <td><label for="title">标题</label></td>
         <td>
@@ -10,6 +9,14 @@ $def with()
             <span id="for_title" class="validate_tip"></span>
         </td>
     </tr>
+  <div id = bankuai style="width: 600px;margin-top: 20px;margin-bottom: 20px;">板块
+        <select id = "part">
+            <option value="a">帮迅哥征友</option>
+            <option value="b">帮clb征友</option>
+            <option value="b">帮倪神征友</option>
+        </select>
+    </div>
+
     <tr>
         <td><label for="content">内容</label></td>
         <td>
@@ -22,6 +29,6 @@ $def with()
         <td><input type="submit" id="send_btn" value="发帖" /></td>
         <td><span class="submit_tip"></span></td>
     </tr>
-</tbody>
-</table>
+</div>
 </form>
+<!--JavaScript 修改板块类型？？？-->

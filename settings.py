@@ -12,11 +12,7 @@ POSTS_PER_PAGE = 10 # 每页显示10篇文章
 
 # 本地环境下的MySQL配置
 MYSQL_USERNAME = 'root'
-<<<<<<< Updated upstream
 MYSQL_PASSWORD = 'zx111111'
-=======
-MYSQL_PASSWORD = 'Jaylee19980417'
->>>>>>> Stashed changes
 
 ##### email服务器配置 #####
 import web

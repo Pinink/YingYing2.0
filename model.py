@@ -12,10 +12,11 @@ db = web.database(dbn='mysql', db='forum', user=settings.MYSQL_USERNAME, pw=sett
 part_name = ['A', 'B', 'C']
 
 class User:
-    def new(self, email, username, password):
-        pwdhash = hashlib.md5(password).hexdigest()
-        return db.insert('users', email=email, name=username, password=pwdhash,
-                         picture='/static/img/user_normal.jpg', description='')
+    def new(self, **info):
+        pwdhash = hashlib.md5(info['password']).hexdigest()
+
+        return db.insert('users', email=info['email'], name=info['username'], password=pwdhash, nickname = info['nickname'], birthday = info['birthday'],
+                         gender = info['gender'], age = info['age'], degree = info['degree'], picture='/static/img/user_normal.jpg', description='',)
 
     def update(self, id, **kwd):
         try:
@@ -100,6 +101,8 @@ class User:
             web.setcookie('user_id', str(user_id), settings.COOKIE_EXPIRES)
         finally:
             return user_id
+    def post_number(self,id):
+        pass
 
 class Post:
     def new(self, title, content, user_id):
@@ -127,7 +130,7 @@ class Post:
             return posts[0]
         else:
             return None
-            
+
     def update(self, id, title, content):
         try:
             db.update('posts', where='id=$id', title=title, content=content, vars=locals())
@@ -138,12 +141,18 @@ class Post:
         
     def view(self, id):
         '''获取id对应的文章'''
-        posts = db.query('''SELECT posts.id, title, content, posts.time, user_id, users.name AS username, users.picture AS user_face
+        posts = db.query('''SELECT posts.id, title, content, click_count, posts.time, user_id, users.name AS username, users.picture AS user_face
                             FROM posts JOIN users
                             ON posts.user_id = users.id
                             WHERE posts.id = %d''' % id)
         if posts:
-            return posts[0]
+            posts = posts[0]
+            click_count = posts.click_count + 1
+            #print("___click__\n")
+            #print(click_count)
+            db.update('posts', where='id=$id', click_count = click_count, vars=locals())
+            ## update click number
+            return posts
 
         return None
 

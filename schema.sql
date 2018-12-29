@@ -14,8 +14,6 @@ CREATE TABLE IF NOT EXISTS users
     nickname VARCHAR(20), #
     birthday VARCHAR(30),
     gender VARCHAR(20),
-    post_number INT UNSIGNED,
-    reply_number INT UNSIGNED,
     age INT UNSIGNED,
     email VARCHAR(100) NOT NULL,
     degree VARCHAR(20),

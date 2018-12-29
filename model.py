@@ -10,12 +10,24 @@ import settings
 # 连接MySQL数据库
 db = web.database(dbn='mysql', db='forum', user=settings.MYSQL_USERNAME, pw=settings.MYSQL_PASSWORD)
 part_name = ['A', 'B', 'C']
-
+def convert_db_dic(members):
+    if not members:
+        return None
+    lis = []
+    for member in members:
+        temp = dict()
+        for key in member:
+            temp[key]=member[key]
+        lis.append(temp)
+    return lis
 class User:
-    def new(self, email, username, password):
-        pwdhash = hashlib.md5(password).hexdigest()
-        return db.insert('users', email=email, name=username, password=pwdhash,
-                         picture='/static/img/user_normal.jpg', description='')
+    def new(self, info):
+        print("in User\n")
+        print(info)
+        pwdhash = hashlib.md5(info['password']).hexdigest()
+        print("are you here _______")
+        return db.insert('users', email=info['email'], name=info['username'], password=pwdhash, nickname = info['nickname'], birthday = info['birthday'],
+                         gender = info['gender'], age = info['age'], degree = info['degree'], picture='/static/img/user_normal.jpg', description='',)
 
     def update(self, id, **kwd):
         try:
@@ -100,6 +112,41 @@ class User:
             web.setcookie('user_id', str(user_id), settings.COOKIE_EXPIRES)
         finally:
             return user_id
+    
+    @staticmethod
+    def fuction_2(part_name):
+        users = db.query('''SELECT distinct user_id
+                            FROM posts
+                            WHERE posts.part = $part_name''',vars = locals())
+        users = convert_db_dic(users)
+        for i in range(len(users)):
+            users[i]['post_number'] = User.post_number(users[i]['user_id'])
+            users[i]['reply_number'] = User.reply_number(users[i]['user_id'])
+
+        post_arrange =  sorted(users, key=lambda user:user['post_number'])
+        reply_arrange =  sorted(users, key=lambda user:user['reply_number'])
+
+
+        #users = users[0]
+        return post_arrange, reply_arrange
+
+    @staticmethod
+    def post_number(user_id):
+        #返回用户发帖总数
+        number = db.query('''SELECT count(*)
+                             FROM posts
+                             WHERE posts.user_id = %d''' % user_id, vars = locals())
+        number = convert_db_dic(number)
+        return number[0]['count(*)']
+    @staticmethod
+    def reply_number(user_id):
+        number = db.query('''SELECT count(*)
+                             FROM comments
+                             WHERE comments.user_id = %d''' % user_id, vars = locals())
+        if number:
+            return number[0]['count(*)']
+        else:
+            return 0
 
 class Post:
     def new(self, title, content, user_id):
@@ -113,21 +160,17 @@ class Post:
                             FROM posts 
                             ORDER BY click_count DESC
                             LIMIT 10 ''')
-        if posts:
-            return posts[0]
-        else:
-            return None
+        posts = convert_db_dic(posts)[0]
+        return posts
     @staticmethod
     def top_10_reply_count():
         posts = db.query('''SELECT posts.id
                             FROM posts 
                             ORDER BY reply_count DESC
                             LIMIT 10 ''')
-        if posts:
-            return posts[0]
-        else:
-            return None
-            
+        posts = convert_db_dic(posts)[0]
+        return posts
+
     def update(self, id, title, content):
         try:
             db.update('posts', where='id=$id', title=title, content=content, vars=locals())
@@ -138,12 +181,18 @@ class Post:
         
     def view(self, id):
         '''获取id对应的文章'''
-        posts = db.query('''SELECT posts.id, title, content, posts.time, user_id, users.name AS username, users.picture AS user_face
+        posts = db.query('''SELECT posts.id, title, content, click_count, posts.time, user_id, users.name AS username, users.picture AS user_face
                             FROM posts JOIN users
                             ON posts.user_id = users.id
                             WHERE posts.id = %d''' % id)
         if posts:
-            return posts[0]
+            posts = posts[0]
+            click_count = posts.click_count + 1
+            #print("___click__\n")
+            #print(click_count)
+            db.update('posts', where='id=$id', click_count = click_count, vars=locals())
+            ## update click number
+            return posts
 
         return None
 
@@ -196,7 +245,7 @@ class Post:
         for part in part_name:
             part_posts = db.query('''SELECT posts.time, posts.id, posts.user_id
                 FROM posts
-                where posts.part=%d''' % part)
+                WHERE posts.part=%d''' % part)
             for post in part_posts:
                 last_comment = Comment(post[id])
 
@@ -275,9 +324,13 @@ class Comment:
 
 if __name__ == '__main__':
     post = Post().new('title', 10, 1)
-    comment = Comment(3).new(10, 1)
-    a = Comment(3).last()
-    b = Post.top_10_reply_count()
-    print(b[0])
+    a = User().post_number(1)
+    b = User().fuction_2('A')
+    print(b)
+    #print(a[0]['count(*)'])
+    #comment = Comment(3).new(10, 1)
+    #a = Comment(3).last()
+    #b = Post.top_10_reply_count()
+    #print(b[0])
     #print(a)
     #print(a[0]['username'])

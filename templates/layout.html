@@ -3,9 +3,22 @@ $def with (content)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>$title</title>
+
 <meta name="robots" content="all,follow" />
 <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/jquery.cleditor.css" />
+<style >
+    #plate1{
+        background-color: red;
+    }
+    #platename{
+        font-family: cursive;
+        font-size: 50px;
+    }
+    #plate2{
+        background-color: green;
+    }
+</style>
 </head>
 <body>
     <div id="main">
@@ -23,8 +36,28 @@ $def with (content)
         <div id="content">
             $:content
         </div>
-        <div id="footer">
-            &copy; 2013 - <a href="http://www.cnblogs.com/russellluo/">$author</a>. All rights reserved. | <a href="/about">关于</a>
+
+    </div>
+    <div>
+        <div id ="plate1">
+            <div id = "platename">
+                帮迅哥征友
+            </div>
+            
+        <div id="content">
+            $:content
+        </div>
+        </div>
+    </div>
+    <div>
+        <div id ="plate2">
+            <div id = "platename">
+                帮cyh征友
+            </div>
+            
+        <div id="content">
+            $:content
+        </div>
         </div>
     </div>
 <script type="text/javascript" src="/static/js/lib/require.min.js" data-main="/static/js/main.js"></script>

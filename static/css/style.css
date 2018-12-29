@@ -195,7 +195,13 @@ div#content {
     padding: 10px;
     border-top: 10px solid #eeeeee;
 }
-
+div#plate{
+    height: 800px;
+    background-color: red;
+}
+div#plate #platename{
+    font-family: cursive;
+}
 div#footer {
     height: 30px;
     line-height: 30px;
@@ -227,7 +233,6 @@ table#post_list {
     width: 98%;
     /* BEG
        表格单元内容超限时，被截断 */
-    table-layout: fixed;
     white-space: nowrap;
     overflow: hidden;
     /* END */
@@ -246,7 +251,7 @@ table#post_list th {
    此时为了各列的宽度设置生效，就需要将宽度设置在第一行,
    这里的第一行即标题th */
 table#post_list th.title {
-    width: 320px;
+    width: 600px;
     overflow: hidden;
 }
 
@@ -255,6 +260,9 @@ table#post_list th.author {
 }
 
 table#post_list th.reply_count {
+    width: 60px;
+}
+table#post_list th.counting {
     width: 60px;
 }
 

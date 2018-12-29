@@ -17,6 +17,7 @@ $code:
 	<tr>
 		<th class="title">话题</th>
 		<th class="author">作者</th>
+		<th class="counting">点击数</th>
 		<th class="reply_count">回应</th>
 		<th class="last_reply_time">最后回应</th>
 	</tr>
@@ -24,6 +25,7 @@ $for p in page_posts:
 	<tr>
 		 <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
 		 <td><a href="/user/$p['userid']">$p['username']</a></td>
+		 <td>$p['comment_count']</td>
 		 <td>$p['comment_count']</td>
 		 <td>$p['last_time']</td>
 	</tr>

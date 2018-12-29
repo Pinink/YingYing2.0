@@ -6,7 +6,7 @@ import util
 import hashlib
 import settings
 
-# belong to zx & cyh & lsc
+# belong to zx & cyh
 # 连接MySQL数据库
 db = web.database(dbn='mysql', db='forum', user=settings.MYSQL_USERNAME, pw=settings.MYSQL_PASSWORD)
 part_name = ['A', 'B', 'C']
@@ -115,7 +115,13 @@ class Post:
         except Exception, e:
             print e
             return False
+<<<<<<< HEAD
+
+=======
+    def top_10(self):
+        pass
         
+>>>>>>> 3d6a8d2c3bdfe0d795329398009b77b9d4bcc6e1
     def view(self, id):
         '''获取id对应的文章'''
         posts = db.query('''SELECT posts.id, title, content, posts.time, user_id, users.name AS username, users.picture AS user_face
@@ -208,12 +214,9 @@ class Comment:
                                         'quote_username': quote_username, 'quote_user_id': quote_user_id})
         return comments_with_quote
 
-    def new(self, content, user_id, quote_id = -1):
+    def new(self, content, user_id, quote_id):
         try:
-            if quote_id == -1:
-                return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id)
-            else:
-                return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id, quote_id=quote_id)
+            return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id, quote_id=quote_id)
         except Exception, e:
             print e
             return 0
@@ -236,13 +239,12 @@ class Comment:
 
     def last(self):
         '''获取当前文章下面的最新评论'''
-        last_comments = db.query('''SELECT comments.id, content, comments.time, users.name AS username, user_id , users.picture AS user_face
+        last_comments = db.query('''SELECT comments.id, content, comments.time, users.name AS username, user_id, quote_id, users.picture AS user_face
                                     FROM comments JOIN users
                                     ON comments.user_id = users.id
                                     WHERE comments.id=(SELECT MAX(id) FROM comments WHERE parent_id=%d)''' % self.__parent_id)
         if last_comments:
-            #print(last_comments[0]) #!! ATTENTION  This line will make a bug！！
-            # After last_comments[0];  last_comments has been changed into last_comments[0]  Why?
+            print(last_comments[0])
             return last_comments[0]
 
         return None

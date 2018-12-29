@@ -144,7 +144,11 @@ class Register:
     def POST(self):
         try:
             i = web.input()
-            user_id = model.User().new(i.email, i.username, i.password)
+            print('_________i',i,"____\n")
+            info = {"email":i.email, "username":i.username, "password": i.password,"nickname":"PININK", "birthday":"2000_01_01", "gender" : "male" , "age" : 18, "degree" : "O"}
+             #info = {"email"：i.email, "username": i.username, "password": i.password, "nickname":i.nickname,"birthday":i.birthday,"gender" = i.gender , "age" = i.age, "degree" = i.degree }
+            print(info)
+            user_id = model.User().new(info)
         except Exception, e:
             return titled_render().failed('邮箱或帐号已存在，请重新<a href="/register">注册</a>')
         else:

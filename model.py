@@ -69,16 +69,14 @@ class User:
             return u.id
         else:
             return 0
-
     def status(self, id):
-        '''查询id对应的用户信息'''
         email = ''
         username = ''
         password_hash = ''
         picture = ''
         description = ''
-
-        users = db.query('SELECT email, name, password, picture, description FROM users WHERE id=%d' % id)
+        degree = ''
+        users = db.query('SELECT email, name, password, picture, description,degree FROM users WHERE id=%d' % id)
         if users:
             u = users[0]
             email = u.email
@@ -86,9 +84,9 @@ class User:
             password_hash = u.password
             picture = u.picture
             description = u.description
-
+            degree = u.degree
         return {'email': email, 'username': username, 'password_hash': password_hash,
-                'picture': picture, 'description': description}
+                'picture': picture, 'description': description,'degree':degree}
 
     def matched_id(self, **kwd):
         '''根据kwd指定的查询条件，搜索数据库'''
@@ -114,11 +112,12 @@ class User:
             return user_id
     
     @staticmethod
-    def fuction_2(part_name):
+    def function_2(part_name):
         users = db.query('''SELECT distinct user_id
                             FROM posts
                             WHERE posts.part = $part_name''',vars = locals())
         users = convert_db_dic(users)
+
         for i in range(len(users)):
             users[i]['post_number'] = User.post_number(users[i]['user_id'])
             users[i]['reply_number'] = User.reply_number(users[i]['user_id'])
@@ -129,7 +128,24 @@ class User:
 
         #users = users[0]
         return post_arrange, reply_arrange
-
+    @staticmethod
+    def function_4_2(part_name):
+        '''users = db.query(
+                    SELECT users.id,nickname
+                    FROM users
+                    WHERE users.click_count >= (
+                        SELECT avg(click_count)
+                        FROM posts
+                        WHERE posts.part = $part_name) AND posts.part = $part_name, vars = locals())
+        #print(posts)
+        posts = convert_db_dic(posts)
+        return posts'''
+        pass
+    @staticmethod
+    def function_5():
+        users = db.query('''
+                    SELECT users.id, nickname
+                    FROM users''')
     @staticmethod
     def post_number(user_id):
         #返回用户发帖总数
@@ -147,6 +163,7 @@ class User:
             return number[0]['count(*)']
         else:
             return 0
+
 
 class Post:
     def new(self, title, content, user_id):
@@ -171,6 +188,18 @@ class Post:
         posts = convert_db_dic(posts)[0]
         return posts
 
+    @staticmethod
+    def function_4_1(part_name):
+        posts = db.query('''
+                    SELECT posts.id,title
+                    FROM posts
+                    WHERE posts.click_count >= (
+                        SELECT avg(click_count)
+                        FROM posts
+                        WHERE posts.part = $part_name) AND posts.part = $part_name''', vars = locals())
+        #print(posts)
+        posts = convert_db_dic(posts)
+        return posts
     def update(self, id, title, content):
         try:
             db.update('posts', where='id=$id', title=title, content=content, vars=locals())
@@ -323,10 +352,11 @@ class Comment:
         return db.query("SELECT COUNT(*) AS count FROM comments WHERE parent_id=%d" % self.__parent_id)[0].count
 
 if __name__ == '__main__':
-    post = Post().new('title', 10, 1)
-    a = User().post_number(1)
-    b = User().fuction_2('A')
-    print(b)
+    #post = Post().new('title', 10, 1)
+    #a = User().post_number(1)
+    #b = User().fuction_2('A')
+    #print()
+    print(Post.function_4('A'))
     #print(a[0]['count(*)'])
     #comment = Comment(3).new(10, 1)
     #a = Comment(3).last()

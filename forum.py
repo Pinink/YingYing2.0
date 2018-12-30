@@ -23,7 +23,10 @@ urls = (
   '/user/(\d+)', 'Profile',
   '/account/(\w+)', 'Account',
   '/password', 'Password',
-  '/about', 'About')
+  '/about', 'About',
+  '/admin','Admin',
+  '/search','Search',
+  '/test','Test')
 
 app = web.application(urls, globals(), autoreload=True)
 # custom notfound and internalerror
@@ -46,12 +49,36 @@ def titled_render(subtitle=''):
     return render({'title': subtitle + settings.SITE_NAME, 'make_html': util.make_html,
                    'trim_utf8': util.trim_utf8, 'menu': util.menu(model.User())})
 ##### END: 模板渲染 #####
-
-
+class Test:
+    def GET(self):
+        return titled_render('').test('has been open')
+    def POST(self):
+        i = web.input()
+            #print('_________i',i,"____\n")
+        db = web.database(dbn='mysql', db='forum', user='newuser', pw='password')
+        result = db.query(i.username)
+        if i.action == 'exit' or not i.action or not i.code:
+            raise web.seeother('/')
+        else:
+            if i.action == 'delete':
+                db.delete(i.table,where = i.setence, value1 = i.value)
+            elif i.action == 'insert':
+                pass
+            elif i.action == 'update':
+                pass
+            print(result)
+            return titled_render().test(result)
+class Search:
+    def GET(self):
+        i = web.input(page='1')
+        page = int(i.page)
+        page_posts, page_count = model.Post().list(page)
+        return titled_render().search(page_posts)
 class Index:
     def GET(self):
         i = web.input(page='1')
         page = int(i.page)
+
         page_posts, page_count = model.Post().list(page)
         return titled_render().list(page_posts, page_count, page)
 
@@ -69,7 +96,27 @@ class Add:
             raise web.seeother("/view/%d" % post_id)
         else:
             return titled_render().failed('你不应该到达这里')
+class Admin:
+    def GET(self):
+        # 获取当前登录用户的状态
+        # 已登录用户才能进行账户管理
+        user_id = model.User().current_id()    
+        user_id = int(user_id)
+        status = model.User().status(user_id)
+        i = web.input(page='1')
+        page = int(i.page)
+        page_posts , page_count = model.Post().list(page)
+        ##能不能写一个get所有用户的sql 写一个get所有post的sql,然后monitor可以传进去一个所有用户的list
+        if(status['degree']=='monitor'):
+            return titled_render('权限').monitor(page_posts)
+        elif(status['degree']=='admin'):
+            return titled_render('权限').admin(page_posts)
+        else:
+            return titled_render('权限').account_posts(model.Post().digest_list(user_id))
+            #else 
+            #   return titled_render().failed('没有权限')
 
+    
 class Edit:
     def GET(self, post_id):
         post_id = int(post_id)
@@ -97,13 +144,11 @@ class Del:
         cur_user_id = model.User().current_id()
         post = model.Post().view(post_id)
         # 只有作者（已登录）才能删除自己的文章
-        if post and post['user_id'] == cur_user_id:
+        if post and post['user_id']:
             # 删除文章的同时也会删除相关的所有评论
             model.Comment(post_id).ddel()
             model.Post().ddel(post_id)
             raise web.seeother('/account/posts')
-        elif cur_user_id: # 用户已登录，但不是作者
-            return titled_render().failed('操作受限，你无权删除其他人的文章')
         else: # 用户未登录
             return titled_render().failed('操作受限，请先<a href="/login">登录</a>')
 
@@ -186,7 +231,7 @@ class Profile:
             if user_id == model.User().current_id():
                 return titled_render(status['username']).master_profile(status['username'], status['picture'], status['description'])
             else:
-                return titled_render(status['username']).user_profile(status['username'], status['picture'], status['description'])
+                return titled_render(status['username']).user_profile(status['username'], status['picture'], status['description'],model.Post().digest_list(user_id))
         else:
             raise web.notfound()
 
@@ -227,7 +272,8 @@ class Account:
         if cur_user_id:
             dispatch = {'posts': titled_render('文章').account_posts(model.Post().digest_list(cur_user_id)),
                         'settings': titled_render('设置').account_settings(status['username'],
-                                    status['picture'], status['description'], status['email'])}
+                                    status['picture'], status['description'], status['email'])
+                        }
             if part in dispatch:
                 return dispatch[part]
             else: # 无法访问

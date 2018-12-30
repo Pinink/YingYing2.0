@@ -8,7 +8,26 @@ $code:
     if end > page_count:
         end = page_count
         start = end - range if end - range > 0 else 1
-
+<body onload="load()">
+<style>
+    #plate1{
+        background-color: red;
+    }
+    #platename{
+        font-family: cursive;
+        font-size: 50px;
+    }
+    #plateintro{
+    	font-family: fantasy;
+    	font-size: 30px;
+    }
+    #plate2{
+        background-color: green;
+    }
+    #plate3{
+    	background-color: yellow;
+    }
+</style>
 <div id="new_post">
 	<a href="/add">+发帖</a>
 </div>
@@ -42,3 +61,109 @@ $for i in xrange(start, end+1):
 $if end < page_count:
     ... <a class="page" href="/?page=$page_count">$page_count</a>
 </div>
+
+
+<div>
+    <div id ="plate1">
+        <div id = "platename">
+            帮迅哥征友
+        </div>
+        <div id = "plateintro">
+			
+	    </div>
+		<table id="post_list" style = "background-color: pink">
+			<tbody>
+				<tr>
+					<th class="title">话题</th>
+					<th class="author">作者</th>
+					<th class="counting">点击数</th>
+					<th class="reply_count">回应</th>
+					<th class="last_reply_time">最后回应</th>
+				</tr>
+				$for p in page_posts:
+					<tr>
+						 <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
+						 <td><a href="/user/$p['userid']">$p['username']</a></td>
+						 <td>$p['click_count']</td>
+						 <td>$p['comment_count']</td>
+						 <td>$p['last_time']</td>
+					</tr>
+			</tbody>
+		</table>
+    </div>
+</div>
+<div id="post_pager">
+$if start > 1:
+    <a class="page" href="/?page=1">1</a> ...
+$for i in xrange(start, end+1):
+    $if i == page:
+        <span class="page">$i</span>
+    $else:
+        <a class="page" href="/?page=$i">$i</a>
+$if end < page_count:
+    ... <a class="page" href="/?page=$page_count">$page_count</a>
+</div>
+<div>
+    <div id ="plate2">
+        <div id = "platename">
+            帮clb征友
+        </div>
+        <div id = "plateintro">
+			
+	    </div>
+		<table id="post_list" style = "background-color: orange">
+			<tbody>
+				<tr>
+					<th class="title">话题</th>
+					<th class="author">作者</th>
+					<th class="counting">点击数</th>
+					<th class="reply_count">回应</th>
+					<th class="last_reply_time">最后回应</th>
+				</tr>
+				$for p in page_posts:
+					<tr>
+						 <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
+						 <td><a href="/user/$p['userid']">$p['username']</a></td>
+						 <td>$p['click_count']</td>
+						 <td>$p['comment_count']</td>
+						 <td>$p['last_time']</td>
+					</tr>
+			</tbody>
+		</table>
+    </div>
+</div><div>
+    <div id ="plate3">
+        <div id = "platename">
+            帮倪神征友
+        </div>
+        <div id = "plateintro">
+			
+	    </div>
+		<table id="post_list" style = "background-color: blue">
+			<tbody>
+				<tr>
+					<th class="title">话题</th>
+					<th class="author">作者</th>
+					<th class="counting">点击数</th>
+					<th class="reply_count">回应</th>
+					<th class="last_reply_time">最后回应</th>
+				</tr>
+				$for p in page_posts:
+					<tr>
+						 <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
+						 <td><a href="/user/$p['userid']">$p['username']</a></td>
+						 <td>$p['click_count']</td>
+						 <td>$p['comment_count']</td>
+						 <td>$p['last_time']</td>
+					</tr>
+			</tbody>
+		</table>
+    </div>
+</div>
+<script>
+	function load(){
+
+	}
+</script>
+</body>
+<!-- load函数：加载各个板块的简介 list可能也要传进来板块信息-->

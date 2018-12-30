@@ -1,0 +1,23 @@
+$def with(posts)
+版主，您好！
+<div id = change style="width: 800px;height: 200px;">
+	<textarea id="intro" name="content"></textarea><br />
+	<input type="submit" id="send_btn" value="确认修改" />
+</div>
+<table id="account_posts">
+<tbody>
+    <tr>
+        <th id="title">标题</th>
+        <th id="time">最近回复</th>
+        <th id="edit">操作</th>
+        <th id="del">操作</th>
+    </tr>
+$for p in posts:
+    <tr>
+        <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
+        <td>$p['last_time']</td>
+        <td><a href="/edit/$p['id']">编辑</a></td>
+        <td><a href="/del/$p['id']">删除</a></td>
+    </tr>
+</tbody>
+</table>

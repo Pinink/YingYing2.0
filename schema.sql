@@ -5,8 +5,15 @@ SET CHARSET 'utf8';
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS forum DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 USE forum;
+-- 创建管理员
+CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
+#GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
+GRANT INSERT, SELECT, UPDATE, DELETE ON forum.users TO 'newuser'@'localhost';
+GRANT INSERT, SELECT, UPDATE, DELETE ON forum.posts TO 'newuser'@'localhost';
+GRANT INSERT, SELECT, UPDATE, DELETE ON forum.comments TO 'newuser'@'localhost';
+FLUSH PRIVILEGES;
 
--- 创建表users
+-- 创建表users 
 CREATE TABLE IF NOT EXISTS users
 (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,

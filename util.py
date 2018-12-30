@@ -44,10 +44,13 @@ def menu(user):
     cur_user_id = user.current_id()
     if cur_user_id:
         status = user.status(cur_user_id)
-        return [{'link': '/user/%d' % cur_user_id, 'name': status['username']},
+        return [{'link':'/search','name':'搜索'},
+                {'link': '/user/%d' % cur_user_id, 'name': status['username']},
                 {'link': '/account/posts', 'name': '文章'},
                 {'link': '/account/settings', 'name': '设置'},
-                {'link': '/logout', 'name': '退出'}]
+                {'link': '/logout', 'name': '退出'},
+                {'link': '/admin', 'name': '权限'}]
+
     else:
         return [{'link': '/login', 'name': '登录'},
                 {'link': '/register', 'name': '注册'}]

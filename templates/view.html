@@ -21,10 +21,10 @@ $def with (post, comment_lis)
 $for c_li in comment_lis:
     $:c_li['li']
 </ul>
-<form id="new_comment"  action="" method="post">
-    <input type="hidden"  id="quote_id" value="0" />
+<form id="new_comment" action="" method="post">
+    <input type="hidden" id="quote_id" value="0" />
     <div class="quote_tip"></div>
-    <textarea id="last" name = "comment" rows="10" cols="90"></textarea><span class="validate_tip"></span><br />
+    <textarea id="last" rows="10" cols="90"></textarea><span class="validate_tip"></span><br />
     <input type="submit" id="submit_btn" value="回帖" />    
 </form>
 </div>

@@ -1,4 +1,4 @@
-$def with(posts)
+$def with(posts,users)
 管理员，您好！
 <table id="account_posts">
 <tbody>
@@ -15,5 +15,20 @@ $for p in posts:
         <td><a href="/edit/$p['id']">编辑</a></td>
         <td><a href="/del/$p['id']">删除</a></td>
     </tr>
+
+</tbody>
+</table>
+<table id="account_posts">
+<tbody>
+    <tr>
+        <th id="title">姓名</th>
+        <th id="edit">操作</th>
+    </tr>
+$for p in users:
+    <tr>
+        <td title="$p['nickname']"><a href="/view/$p['id']">$trim_utf8(p['nickname'], 25)</a></td>
+        <td><a href="/dele/$p['id']">删除</a></td>
+    </tr>
+
 </tbody>
 </table>

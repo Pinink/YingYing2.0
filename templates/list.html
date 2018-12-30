@@ -30,21 +30,22 @@ $code:
 <body onload="load()">
 <style>
     #plate1{
-        background-color: red;
+        background-color: #f6f5ec;
     }
     #platename{
-        font-family: cursive;
-        font-size: 50px;
+    	font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
+        font-size: 30px;
+        font-weight: bold;
     }
     #plateintro{
     	font-family: fantasy;
-    	font-size: 30px;
+    	font-size: 20px;
     }
     #plate2{
-        background-color: green;
+        background-color: #f2eada;
     }
     #plate3{
-    	background-color: yellow;
+    	background-color: #d9d6c3;
     }
 </style>
 <div id="new_post">
@@ -54,12 +55,12 @@ $code:
 <div>
     <div id ="plate1">
         <div id = "platename">
-            帮迅哥征友
+            <a href="/part/A">帮迅哥征友</a>
         </div>
-        <div id = "plateintro">
+        <div class = plateintro id = "intro1">
 			
 	    </div>
-		<table id="post_list" style = "background-color: pink">
+		<table id="post_list" style = "background-color: #fffef9">
 			<tbody>
 				<tr>
 					<th class="title">话题</th>
@@ -80,31 +81,16 @@ $code:
 		</table>
     </div>
 </div>
-<div id="post_pager">
-$if start1 > 1:
-    <a class="page" href="/?page=$page">$page['A']</a> ...
-$for i in xrange(start1, end1+1):
-    $if i == page['A']:
-    	$page_temp = page
-        <span class="page">$page_temp['A']</span>
-    $else:
-    	$page_temp = page
-    	$page_temp['A'] = i
-        <a class="page" href="/?page=$page_temp['A']">$page_temp['A']</a>
-$if end1 < page_count['A']:
-		$page_temp = page
-    	$page_temp['A'] = page_count['A']
-    ... <a class="page" href="/?page=$page_temp['A']">$page_temp['A']</a>
-</div>
+
 <div>
     <div id ="plate2">
         <div id = "platename">
-            帮clb征友
+             <a href="/part/B">帮clb征友</a>
         </div>
-        <div id = "plateintro">
+        <div class = plateintro id = "intro2">
 			
 	    </div>
-		<table id="post_list" style = "background-color: orange">
+		<table id="post_list" style = "background-color: #d3d7d4">
 			<tbody>
 				<tr>
 					<th class="title">话题</th>
@@ -125,31 +111,16 @@ $if end1 < page_count['A']:
 		</table>
     </div>
 </div>
-<div id="post_pager">
-$if start2 > 1:
-    <a class="page" href="/?page=$page">$page</a> ...
-$for i in xrange(start2, end2+1):
-    $if i == page['B']:
-    	$page_temp = page
-        <span class="page">$page_temp['B']</span>
-    $else:
-    	$page_temp = page
-    	$page_temp['B'] = i
-        <a class="page" href="/?page=$page_temp">$page_temp</a>
-$if end2 < page_count['B']:
-		$page_temp = page
-    	$page_temp['B'] = page_count['B']
-    ... <a class="page" href="/?page=$page_temp">$page_temp</a>
-</div>
+
 <div>
     <div id ="plate3">
         <div id = "platename">
-            帮倪神征友
+             <a href="/part/C">帮倪神征友</a>
         </div>
-        <div id = "plateintro">
+        <div class = plateintro id = "intro3">
 			
 	    </div>
-		<table id="post_list" style = "background-color: blue">
+		<table id="post_list" style = "background-color: #a1a3a6">
 			<tbody>
 				<tr>
 					<th class="title">话题</th>
@@ -170,23 +141,7 @@ $if end2 < page_count['B']:
 		</table>
     </div>
 </div>
-<div id="post_pager">
-$if start3 > 1:
-    <a class="page" href="/?page=$page">$page</a> ...
-$for i in xrange(start3, end3+1):
-    $if i == page['C']:
-    	$page_temp = page
-        <span class="page">$page_temp['C']</span>
-    $else:
-    	$page_temp = page
-    	$page_temp['C'] = i
-        <a class="page" href="/?page=$page_temp">$page_temp</a>
-$if end3 < page_count['C']:
-		$page_temp = page
-    	$page_temp['C'] = page_count['C']
-    ... <a class="page" href="/?page=$page_temp">$page_temp</a>
-</div>
-<div>
+
 <script>
 	function load(){
 

@@ -1,18 +1,54 @@
-$def with(posts)
+$def with(search1,search2,search3,search4,search5)
 <html>
 <body>
-	<script >
+	<script>
 		function search1(){
-			
+			document.getElementById("search1").style.visibility = "visible"
+			document.getElementById("search2").style.visibility = "hidden"
+			document.getElementById("search3").style.visibility = "hidden"
+			document.getElementById("search4").style.visibility = "hidden"
+			document.getElementById("search5").style.visibility = "hidden"
+			document.getElementById("search6").style.visibility = "hidden"
 		}
 		function search2(){
-
+			document.getElementById("search1").style.visibility = "hidden"
+			document.getElementById("search2").style.visibility = "visible"
+			document.getElementById("search3").style.visibility = "hidden"
+			document.getElementById("search4").style.visibility = "hidden"
+			document.getElementById("search5").style.visibility = "hidden"
+			document.getElementById("search6").style.visibility = "hidden"
 		}
 		function search3(){
-
+			document.getElementById("search1").style.visibility = "hidden"
+			document.getElementById("search2").style.visibility = "hidden"
+			document.getElementById("search3").style.visibility = "visible"
+			document.getElementById("search4").style.visibility = "hidden"
+			document.getElementById("search5").style.visibility = "hidden"
+			document.getElementById("search6").style.visibility = "hidden"
 		}
 		function search4(){
-
+			document.getElementById("search1").style.visibility = "hidden"
+			document.getElementById("search2").style.visibility = "hidden"
+			document.getElementById("search3").style.visibility = "hidden"
+			document.getElementById("search4").style.visibility = "visible"
+			document.getElementById("search5").style.visibility = "hidden"
+			document.getElementById("search6").style.visibility = "hidden"
+		}
+		function search5(){
+			document.getElementById("search1").style.visibility = "hidden"
+			document.getElementById("search2").style.visibility = "hidden"
+			document.getElementById("search3").style.visibility = "hidden"
+			document.getElementById("search4").style.visibility = "hidden"
+			document.getElementById("search5").style.visibility = "visible"
+			document.getElementById("search6").style.visibility = "hidden"
+		}
+		function search6(){
+			document.getElementById("search1").style.visibility = "hidden"
+			document.getElementById("search2").style.visibility = "hidden"
+			document.getElementById("search3").style.visibility = "hidden"
+			document.getElementById("search4").style.visibility = "hidden"
+			document.getElementById("search5").style.visibility = "hidden"
+			document.getElementById("search6").style.visibility = "visible"
 		}
 	</script>
 <div id = searcharea>
@@ -20,9 +56,26 @@ $def with(posts)
 	<input type="button" value="search2" onclick = "search2();">
 	<input type="button" value="search3" onclick = "search3();">
 	<input type="button" value="search4" onclick = "search4();">
+	<input type="button" value="search5" onclick = "search5();">
+	<input type="button" value="search6" onclick = "search6();">
 </div>
-<div id = solution>
-
+<div id = search1 style="visibility: hidden;">
+	
+</div>
+<div id = search2 style="visibility: hidden;">
+	
+</div>
+<div id = search3 style="visibility: hidden;">
+	
+</div>
+<div id = search4 style="visibility: hidden;">
+	
+</div>
+<div id = search5 style="visibility: hidden;">
+	
+</div>
+<div id = search6 style="visibility: hidden;">
+	
 </div>
 </body>
 </html>

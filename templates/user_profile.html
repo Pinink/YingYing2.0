@@ -11,9 +11,6 @@ $def with (username, picture, description,posts)
         <th id="time">发布时间</th>
     </tr>
 $for p in posts:
-    <tr>
-        <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
-        <td>$p['time']</td>
-    </tr>
+  <tr><td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td><td>$p['time']</td></tr>
 </tbody>
 </table>

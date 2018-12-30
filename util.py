@@ -15,8 +15,6 @@ def comments_to_lis(comments):
     '''评论列表'''
     lis = []
     for c in comments:
-        print("======================\n")
-        print(c)
         li_start = '<li class="clearfix comment_item" id="%d">' % c['id']
         user_face= '''<div class="user_face">
                           <a href="/user/%d"><img src="%s" alt="%s"/></a>
@@ -25,10 +23,9 @@ def comments_to_lis(comments):
         content_head = '''<div class="head">
                              <span class="username"><a href="/user/%d">%s</a></span>
                              <span class="time">%s</span>
-                             <span class="layer">%s</span>
                              <span class="reply"><a href="#last">回应</a></span>
                              <span class="floor"><a href="#first">top</a></span>
-                         </div>''' % (c['user_id'], c['username'], c['time'], c['layer'])
+                         </div>''' % (c['user_id'], c['username'], c['time'])
         content_quote = ''
         if c['quote_content']:
             content_quote = '<div class="quote"><p><b>引用</b>  <a href="/user/%d">%s</a><b>：</b></p><p>%s</p></div>' \

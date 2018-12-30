@@ -62,7 +62,7 @@ class User:
         print("are you here _______")
         return db.insert('users', email=info['email'], name=info['username'], password=pwdhash, nickname = info['nickname'], birthday = info['birthday'],
                          gender = info['gender'], age = info['age'], degree = info['degree'], picture='/static/img/user_normal.jpg', description='',)
-    def user_for_admin():
+    def user_for_admin(self):
         users = db.query('''SELECT id, nickname
                             FROM users''')
         users = convert_db_dic(users)
@@ -380,7 +380,7 @@ class Post:
     def query_hotness():
         hot_post = {}
         hot_post_reply_user = {}
-        for part in parts_name:
+        for part in ['A','B','C']:
             part_posts = db.query('''SELECT posts.time, posts.id, posts.user_id, posts.title, posts.part, posts.content
                 FROM posts
                 WHERE posts.part=$part''', vars = locals())

@@ -32,11 +32,19 @@ CREATE TABLE IF NOT EXISTS users
     UNIQUE KEY(email),
     UNIQUE KEY(name)
 );
+CREATE TABLE IF NOT EXISTS parts
+(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    part_name VARCHAR(20),
+    part_text TEXT,
+    PRIMARY KEY(id)
 
+)
 -- 创建表posts
 CREATE TABLE IF NOT EXISTS posts
 (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    #part_id INT UNSIGNED
     part VARCHAR(20),
     title TEXT NOT NULL,
     content TEXT NOT NULL,
@@ -46,6 +54,7 @@ CREATE TABLE IF NOT EXISTS posts
     user_id INT UNSIGNED,
     PRIMARY KEY(id),
     FOREIGN KEY(user_id) REFERENCES users(id)
+    FOREIGN KEY(part) REFERENCES parts(part_name)    
 );
 
 -- 创建表comments
@@ -65,6 +74,7 @@ CREATE TABLE IF NOT EXISTS comments
     FOREIGN KEY(parent_id) REFERENCES posts(id),
     FOREIGN KEY(quote_id) REFERENCES comments(id)
 );
+
 
 -- 设置时区为北京时间
 -- 1.以下命令仅在当前会话期间有效

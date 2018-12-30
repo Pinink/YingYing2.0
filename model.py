@@ -10,6 +10,11 @@ import settings
 # 连接MySQL数据库
 db = web.database(dbn='mysql', db='forum', user=settings.MYSQL_USERNAME, pw=settings.MYSQL_PASSWORD)
 part_name = ['A', 'B', 'C']
+def init_bbs():
+    db.insert('parts',part_name = 'A',part_text = 'I am Part A')
+    db.insert('parts',part_name = 'B',part_text = 'I am Part B')
+    db.insert('parts',part_name = 'C',part_text = 'I am Part C')
+
 def convert_db_dic(members):
     if not members:
         return None
@@ -77,7 +82,8 @@ class User:
         description = ''
         degree = ''
         users = db.query('SELECT email, name, password, picture, description,degree FROM users WHERE id=%d' % id)
-        if users:
+        users = convert_db_dic(users)
+        '''if users:
             u = users[0]
             email = u.email
             username = u.name
@@ -86,8 +92,8 @@ class User:
             description = u.description
             degree = u.degree
         return {'email': email, 'username': username, 'password_hash': password_hash,
-                'picture': picture, 'description': description,'degree':degree}
-
+                'picture': picture, 'description': description,'degree':degree}'''
+        return users[0]
     def matched_id(self, **kwd):
         '''根据kwd指定的查询条件，搜索数据库'''
         users = db.select('users', what='id', where=web.db.sqlwhere(kwd, grouping='OR'))
@@ -200,6 +206,34 @@ class Post:
         #print(posts)
         posts = convert_db_dic(posts)
         return posts
+
+    def list_differentpart(self, page,part_name):
+        '''获取第page页的所有文章'''
+        per_page = settings.POSTS_PER_PAGE
+
+        # 获取从offset开始共per_page个post
+        offset = (page - 1) * per_page
+        posts = db.query('''SELECT posts.id, title, posts.time, user_id, click_count, users.name AS username
+                            FROM posts JOIN users
+                            ON posts.user_id = users.id
+                            WHERE posts.part = $part_name
+                            ORDER BY posts.id DESC
+                            LIMIT $per_page OFFSET $offset''', vars = locals())
+        page_posts = []
+        for p in posts:
+            comment = Comment(p.id)
+            last = comment.last()
+            last_time = last.time if last else p.time
+            # and click count
+            page_posts.append({'id': p.id, 'title': p.title, 'click_count':p.click_count,'userid': p.user_id, 'username': p.username, 'comment_count': comment.count(), 'last_time': last_time})
+
+        # 计算总页数
+        post_count = self.count()
+        page_count = post_count / per_page
+        if post_count % per_page > 0:
+            page_count += 1
+
+        return (page_posts, page_count)
     def update(self, id, title, content):
         try:
             db.update('posts', where='id=$id', title=title, content=content, vars=locals())
@@ -231,6 +265,7 @@ class Post:
             #db.query('DELETE FROM posts WHERE id=%d' % id)
         except Exception, e:
             print e
+
 
     def list(self, page):
         '''获取第page页的所有文章'''

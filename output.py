@@ -13,7 +13,7 @@ def writeInfoToXml(filename):
   userName.appendChild(Name)
   info = doc.createElement('Info')
   basicinfo = doc.createElement('BasicInfo')
-
+  
   with open(filename, 'w') as f:
     f.write(doc.toprettyxml(indent='\t', encoding='utf-8'))
   return

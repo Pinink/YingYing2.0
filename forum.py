@@ -56,30 +56,39 @@ class Test:
         i = web.input()
             #print('_________i',i,"____\n")
         db = web.database(dbn='mysql', db='forum', user='newuser', pw='password')
-        result = db.query(i.username)
+        #result = db.query(i.username)
+        result = 'null'
         if i.action == 'exit' or not i.action or not i.code:
             raise web.seeother('/')
         else:
             if i.action == 'delete':
-                db.delete(i.table,where = i.setence, value1 = i.value)
+                db.delete(i.table,where = i.setence)
             elif i.action == 'insert':
                 pass
             elif i.action == 'update':
                 pass
-            print(result)
+            elif i.action =='query':
+                pass
+            #print(result)
             return titled_render().test(result)
 class Search:
     def GET(self):
         i = web.input(page='1')
         page = int(i.page)
         page_posts, page_count = model.Post().list(page)
+
         return titled_render().search(page_posts)
+
 class Index:
     def GET(self):
-        i = web.input(page='1')
-        page = int(i.page)
-
-        page_posts, page_count = model.Post().list(page)
+        page_init = {'A':1,'B':1,'C':1}
+        page = web.input(page=page_init)['page']
+        print(page)
+        page_posts1, page_count1 = model.Post().list_differentpart(page['A'],'A')
+        page_posts2, page_count2 = model.Post().list_differentpart(page['B'],'B')
+        page_posts3, page_count3 = model.Post().list_differentpart(page['C'],'C')
+        page_posts = {'A':page_posts1, 'B':page_posts2, 'C':page_posts3}
+        page_count = {'A':page_count1, 'B':page_count2, 'C':page_count3}
         return titled_render().list(page_posts, page_count, page)
 
 class Add:
@@ -91,7 +100,9 @@ class Add:
 
     def POST(self):
         i = web.input(title='', content='')
-        post_id = model.Post().new(i.title, i.content, model.User().current_id())
+        print('________________\n')
+        print(i)
+        post_id = model.Post().new(i.title, i.content, i.part, model.User().current_id())
         if post_id:
             raise web.seeother("/view/%d" % post_id)
         else:
@@ -160,7 +171,9 @@ class View:
         if post:
             comment = model.Comment(int(post_id))
             comments = comment.quote(comment.list())
+            print(comments)
             comment_lis = util.comments_to_lis(comments)
+
             return titled_render(post.title).view(post, comment_lis)
         else:
             raise web.seeother('/')
@@ -175,7 +188,8 @@ class View:
             comment = model.Comment(int(post_id))
             # 回帖成功：返回"回帖"+"引用贴"信息
             #print('_____________')
-            if comment.new(i.content, cur_user_id):
+            current_layer = comment.curlayer() + 1
+            if comment.new(i.content, cur_user_id, i.quote_id, current_layer):
                 comments = comment.quote([comment.last()])
                 return json.dumps(util.comments_to_lis(comments))
 
@@ -190,9 +204,9 @@ class Register:
         try:
             i = web.input()
             print('_________i',i,"____\n")
-            info = {"email":i.email, "username":i.username, "password": i.password,"nickname":"PININK", "birthday":"2000_01_01", "gender" : "male" , "age" : 18, "degree" : "O"}
+            info = {"email":i.email, "username":i.username, "password": i.password,"nickname":i.nickname, "birthday":i.birthday, "gender" : i.gender , "age" : i.age, "degree" : "white"}
              #info = {"email"：i.email, "username": i.username, "password": i.password, "nickname":i.nickname,"birthday":i.birthday,"gender" = i.gender , "age" = i.age, "degree" = i.degree }
-            print(info)
+            #print(info)
             user_id = model.User().new(info)
         except Exception, e:
             return titled_render().failed('邮箱或帐号已存在，请重新<a href="/register">注册</a>')
@@ -332,5 +346,6 @@ application = app.wsgifunc()
 
 ##### 调试 #####
 if __name__ == "__main__":
-    init()
+    model.init_bss()
+    print("Init with three parts")
     app.run()

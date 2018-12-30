@@ -1,13 +1,32 @@
-$def with (page_posts, page_count, page)
+$def with (page_posts,page_count, page)
 
 $code:
-    grace = 5
-    range = grace * 2
-    start = page - grace if page - grace > 0 else 1
-    end = start + range
-    if end > page_count:
-        end = page_count
-        start = end - range if end - range > 0 else 1
+    grace1 = 5
+    range1 = grace1 * 2
+    start1 = page['A'] - grace1 if page['A'] - grace1 > 0 else 1
+    end1 = start1 + range1
+    if end1 > page_count['A']:
+        end1 = page_count['A']
+        start1 = end1 - range1 if end1 - range1 > 0 else 1
+
+    grace2 = 5
+    range2 = grace2 * 2
+    start2 = page['B'] - grace2 if page['B'] - grace2 > 0 else 1
+    end2 = start2 + range2
+    if end2 > page_count['B']:
+        end2 = page_count['B']
+        start2 = end2 - range2 if end2 - range2 > 0 else 1
+    grace3 = 5
+    range3 = grace3 * 2
+    start3 = page['C'] - grace3 if page['C'] - grace3 > 0 else 1
+    end3 = start3 + range3
+    if end3 > page_count['C']:
+        end3 = page_count['C']
+        start3 = end3 - range3 if end3 - range3 > 0 else 1
+    iii = page['A']
+    jjj = page['B']
+    kkk = page['C']
+    page_temp = page
 <body onload="load()">
 <style>
     #plate1{
@@ -31,37 +50,6 @@ $code:
 <div id="new_post">
 	<a href="/add">+发帖</a>
 </div>
-<table id="post_list">
-<tbody>
-	<tr>
-		<th class="title">话题</th>
-		<th class="author">作者</th>
-		<th class="counting">点击数</th>
-		<th class="reply_count">回应</th>
-		<th class="last_reply_time">最后回应</th>
-	</tr>
-$for p in page_posts:
-	<tr>
-		 <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
-		 <td><a href="/user/$p['userid']">$p['username']</a></td>
-		 <td>$p['click_count']</td>
-		 <td>$p['comment_count']</td>
-		 <td>$p['last_time']</td>
-	</tr>
-</tbody>
-</table>
-<div id="post_pager">
-$if start > 1:
-    <a class="page" href="/?page=1">1</a> ...
-$for i in xrange(start, end+1):
-    $if i == page:
-        <span class="page">$i</span>
-    $else:
-        <a class="page" href="/?page=$i">$i</a>
-$if end < page_count:
-    ... <a class="page" href="/?page=$page_count">$page_count</a>
-</div>
-
 
 <div>
     <div id ="plate1">
@@ -80,7 +68,7 @@ $if end < page_count:
 					<th class="reply_count">回应</th>
 					<th class="last_reply_time">最后回应</th>
 				</tr>
-				$for p in page_posts:
+				$for p in page_posts['A']:
 					<tr>
 						 <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
 						 <td><a href="/user/$p['userid']">$p['username']</a></td>
@@ -93,15 +81,20 @@ $if end < page_count:
     </div>
 </div>
 <div id="post_pager">
-$if start > 1:
-    <a class="page" href="/?page=1">1</a> ...
-$for i in xrange(start, end+1):
-    $if i == page:
-        <span class="page">$i</span>
+$if start1 > 1:
+    <a class="page" href="/?page=$page">$page['A']</a> ...
+$for i in xrange(start1, end1+1):
+    $if i == page['A']:
+    	$page_temp = page
+        <span class="page">$page_temp['A']</span>
     $else:
-        <a class="page" href="/?page=$i">$i</a>
-$if end < page_count:
-    ... <a class="page" href="/?page=$page_count">$page_count</a>
+    	$page_temp = page
+    	$page_temp['A'] = i
+        <a class="page" href="/?page=$page_temp['A']">$page_temp['A']</a>
+$if end1 < page_count['A']:
+		$page_temp = page
+    	$page_temp['A'] = page_count['A']
+    ... <a class="page" href="/?page=$page_temp['A']">$page_temp['A']</a>
 </div>
 <div>
     <div id ="plate2">
@@ -120,7 +113,7 @@ $if end < page_count:
 					<th class="reply_count">回应</th>
 					<th class="last_reply_time">最后回应</th>
 				</tr>
-				$for p in page_posts:
+				$for p in page_posts['B']:
 					<tr>
 						 <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
 						 <td><a href="/user/$p['userid']">$p['username']</a></td>
@@ -131,7 +124,24 @@ $if end < page_count:
 			</tbody>
 		</table>
     </div>
-</div><div>
+</div>
+<div id="post_pager">
+$if start2 > 1:
+    <a class="page" href="/?page=$page">$page</a> ...
+$for i in xrange(start2, end2+1):
+    $if i == page['B']:
+    	$page_temp = page
+        <span class="page">$page_temp['B']</span>
+    $else:
+    	$page_temp = page
+    	$page_temp['B'] = i
+        <a class="page" href="/?page=$page_temp">$page_temp</a>
+$if end2 < page_count['B']:
+		$page_temp = page
+    	$page_temp['B'] = page_count['B']
+    ... <a class="page" href="/?page=$page_temp">$page_temp</a>
+</div>
+<div>
     <div id ="plate3">
         <div id = "platename">
             帮倪神征友
@@ -148,7 +158,7 @@ $if end < page_count:
 					<th class="reply_count">回应</th>
 					<th class="last_reply_time">最后回应</th>
 				</tr>
-				$for p in page_posts:
+				$for p in page_posts['C']:
 					<tr>
 						 <td title="$p['title']"><a href="/view/$p['id']">$trim_utf8(p['title'], 25)</a></td>
 						 <td><a href="/user/$p['userid']">$p['username']</a></td>
@@ -160,6 +170,23 @@ $if end < page_count:
 		</table>
     </div>
 </div>
+<div id="post_pager">
+$if start3 > 1:
+    <a class="page" href="/?page=$page">$page</a> ...
+$for i in xrange(start3, end3+1):
+    $if i == page['C']:
+    	$page_temp = page
+        <span class="page">$page_temp['C']</span>
+    $else:
+    	$page_temp = page
+    	$page_temp['C'] = i
+        <a class="page" href="/?page=$page_temp">$page_temp</a>
+$if end3 < page_count['C']:
+		$page_temp = page
+    	$page_temp['C'] = page_count['C']
+    ... <a class="page" href="/?page=$page_temp">$page_temp</a>
+</div>
+<div>
 <script>
 	function load(){
 

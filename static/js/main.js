@@ -18,7 +18,7 @@ require.config({
 });
 
 require(['jquery', 'register', 'login', 'comment', 'setting', 'password', 'profile', 'new_post', 'cleditor_use'],
-function($, register, login, comment, setting, password, profile, new_post, cleditor_use) {
+function($register, login, comment, setting, password, profile, new_post, cleditor_use) {
     // 禁用cache
     $.ajaxSetup({
         cache : false

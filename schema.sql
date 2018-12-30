@@ -50,7 +50,6 @@ CREATE TABLE IF NOT EXISTS posts
     content TEXT NOT NULL,
     time TIMESTAMP DEFAULT NOW(),
     click_count INT UNSIGNED,
-    reply_count INT UNSIGNED,
     user_id INT UNSIGNED,
     PRIMARY KEY(id),
     FOREIGN KEY(user_id) REFERENCES users(id)

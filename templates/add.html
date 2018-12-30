@@ -1,5 +1,4 @@
 $def with()
-
 <form id="new_post" action="" method="post">
 <div>
     <tr>
@@ -10,8 +9,8 @@ $def with()
         </td>
     </tr>
   <div id = bankuai style="width: 600px;margin-top: 20px;margin-bottom: 20px;">板块
-        <select id = "part">
-            <option value="a">帮迅哥征友</option>
+        <select id = "part" name = "part">
+            <option value="a">帮wl征友</option>
             <option value="b">帮clb征友</option>
             <option value="c">帮倪神征友</option>
         </select>
@@ -31,4 +30,9 @@ $def with()
     </tr>
 </div>
 </form>
+<script>
+    var tmp = document.getElementById("part").value
+</script>
+
+
 <!--JavaScript 修改板块类型？？？-->

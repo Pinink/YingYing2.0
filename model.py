@@ -14,6 +14,26 @@ def init_bbs():
     db.insert('parts',part_name = 'A',part_text = 'I am Part A')
     db.insert('parts',part_name = 'B',part_text = 'I am Part B')
     db.insert('parts',part_name = 'C',part_text = 'I am Part C')
+def task():
+    Search1 = Post.function_1_1()
+    Search12 = Post.function_1_2()
+    Search_1 = [Search1, Search12]
+    Search_2 = {}
+    Search_2['A'] = User.function_2('A')
+    #Search_2['A'][0] 为按post_number排序 
+    #Search_2['B'][1] 为按reply_number 排序
+    Search_2['B'] = User.function_2('B')
+    Search_2['C'] = User.function_2('C')
+    Search_4 = {}
+    Search_4['A'] = Post.function_4_1('A')
+    Search_4['B'] =Post.function_4_1('B')
+    Search_4['C'] =Post.function_4_1('C')
+    Search3  = Post.query_hotness()
+    #Search3[0]['A'] 是A版热度帖子
+    #Search3[1]['A'] 是A版热度用户
+    Search5 = Post.more_active('A','B')
+    #Search5是user信息的一个list
+    return [Search_1,Search_2,Search3,Search_4,Search5]
 
 def convert_db_dic(members):
     if not members:
@@ -25,6 +45,15 @@ def convert_db_dic(members):
             temp[key]=member[key]
         lis.append(temp)
     return lis
+class Part:
+    def __init__(self,name):
+        self.name = name
+    def status(self):
+        part = db.query('''SELECT * 
+                           FROM parts
+                           WHERE parts.name = $name''',var = locals())
+        part = convert_db_dic(part)
+        return part[0]
 class User:
     def new(self, info):
         print("in User\n")
@@ -33,7 +62,14 @@ class User:
         print("are you here _______")
         return db.insert('users', email=info['email'], name=info['username'], password=pwdhash, nickname = info['nickname'], birthday = info['birthday'],
                          gender = info['gender'], age = info['age'], degree = info['degree'], picture='/static/img/user_normal.jpg', description='',)
-
+    def user_for_admin():
+        users = db.query('''SELECT id, nickname
+                            FROM users''')
+        users = convert_db_dic(users)
+        return users
+    @staticmethod
+    def user_info_for_output():
+        pass
     def update(self, id, **kwd):
         try:
             if 'nickname' in kwd and kwd['nickname']:
@@ -63,7 +99,12 @@ class User:
         except Exception, e:
             print e
             return False
-
+    def ddel(self, id):
+        try:
+            db.delete('users', where='id=$id', vars=locals())
+            #db.query('DELETE FROM posts WHERE id=%d' % id)
+        except Exception, e:
+            print e
     def login(self, username, password):
         '''登录验证'''
         pwdhash = hashlib.md5(password).hexdigest()
@@ -81,7 +122,7 @@ class User:
         picture = ''
         description = ''
         degree = ''
-        users = db.query('SELECT email, name, password, picture, description,degree FROM users WHERE id=%d' % id)
+        users = db.query('SELECT email, name as username, password, picture, description,degree FROM users WHERE id=%d' % id)
         users = convert_db_dic(users)
         '''if users:
             u = users[0]
@@ -119,33 +160,23 @@ class User:
     
     @staticmethod
     def function_2(part_name):
-        users = db.query('''SELECT distinct user_id
-                            FROM posts
+        users = db.query('''SELECT distinct user_id, nickname ,gender, age
+                            FROM posts JOIN users
+                            ON posts.user_id = users.id
                             WHERE posts.part = $part_name''',vars = locals())
         users = convert_db_dic(users)
-
+        if users == None:
+            return None
         for i in range(len(users)):
             users[i]['post_number'] = User.post_number(users[i]['user_id'])
             users[i]['reply_number'] = User.reply_number(users[i]['user_id'])
 
         post_arrange =  sorted(users, key=lambda user:user['post_number'])
         reply_arrange =  sorted(users, key=lambda user:user['reply_number'])
-
-
         #users = users[0]
-        return post_arrange, reply_arrange
+        return [post_arrange, reply_arrange]
     @staticmethod
     def function_4_2(part_name):
-        '''users = db.query(
-                    SELECT users.id,nickname
-                    FROM users
-                    WHERE users.click_count >= (
-                        SELECT avg(click_count)
-                        FROM posts
-                        WHERE posts.part = $part_name) AND posts.part = $part_name, vars = locals())
-        #print(posts)
-        posts = convert_db_dic(posts)
-        return posts'''
         pass
     @staticmethod
     def function_5():
@@ -172,11 +203,45 @@ class User:
 
 
 class Post:
-    def new(self, title, content, user_id):
+    def new(self, title, content, part,user_id):
         if user_id:
-            return db.insert('posts', title=title, content=content, user_id=user_id,click_count = 0, reply_count = 0, part = 'A')
+            return db.insert('posts', title=title, content=content, user_id=user_id,click_count = 0, reply_count = 0, part = part)
         else:
             return 0
+    @staticmethod
+    def function_1_1(page = 1):
+        posts = db.query('''SELECT posts.id, title, posts.time, user_id, click_count, users.name AS username
+                            FROM posts JOIN users
+                            ON posts.user_id = users.id
+                            ORDER BY click_count DESC
+                            LIMIT 10''')
+        page_posts = []
+        for p in posts:
+            comment = Comment(p.id)
+            last = comment.last()
+            last_time = last.time if last else p.time
+            # and click count
+            page_posts.append({'id': p.id, 'title': p.title, 'click_count':p.click_count,'userid': p.user_id, 'username': p.username, 'comment_count': comment.count(), 'last_time': last_time})
+
+        return page_posts
+    @staticmethod
+    def function_1_2(page = 1):
+
+        posts = db.query('''SELECT posts.id, title, posts.time, user_id, click_count, users.name AS username
+                            FROM posts JOIN users
+                            ON posts.user_id = users.id
+                            ORDER BY (SELECT COUNT(*) AS count FROM comments WHERE parent_id = posts.id) DESC
+                            LIMIT 10''')
+        page_posts = []
+        for p in posts:
+            comment = Comment(p.id)
+            last = comment.last()
+            last_time = last.time if last else p.time
+            # and click count
+            page_posts.append({'id': p.id, 'title': p.title, 'click_count':p.click_count,'userid': p.user_id, 'username': p.username, 'comment_count': comment.count(), 'last_time': last_time})
+            
+        return page_posts
+    
     @staticmethod
     def top_10_click_count():
         posts = db.query('''SELECT posts.id
@@ -197,15 +262,21 @@ class Post:
     @staticmethod
     def function_4_1(part_name):
         posts = db.query('''
-                    SELECT posts.id,title
-                    FROM posts
+                    SELECT posts.id, title, posts.time, user_id, click_count, users.name AS username
+                    FROM posts JOIN users
+                    ON posts.user_id = users.id
                     WHERE posts.click_count >= (
                         SELECT avg(click_count)
                         FROM posts
                         WHERE posts.part = $part_name) AND posts.part = $part_name''', vars = locals())
-        #print(posts)
-        posts = convert_db_dic(posts)
-        return posts
+        page_posts = []
+        for p in posts:
+            comment = Comment(p.id)
+            last = comment.last()
+            last_time = last.time if last else p.time
+            # and click count
+            page_posts.append({'id': p.id, 'title': p.title, 'click_count':p.click_count,'userid': p.user_id, 'username': p.username, 'comment_count': comment.count(), 'last_time': last_time})
+        return page_posts
 
     def list_differentpart(self, page,part_name):
         '''获取第page页的所有文章'''
@@ -305,13 +376,51 @@ class Post:
         '''获取文章总数'''
         return db.query("SELECT COUNT(*) AS count FROM posts")[0].count
 
-    def query_hotness(self):
-        for part in part_name:
-            part_posts = db.query('''SELECT posts.time, posts.id, posts.user_id
+    @staticmethod
+    def query_hotness():
+        hot_post = {}
+        hot_post_reply_user = {}
+        for part in parts_name:
+            part_posts = db.query('''SELECT posts.time, posts.id, posts.user_id, posts.title, posts.part, posts.content
                 FROM posts
-                WHERE posts.part=%d''' % part)
+                WHERE posts.part=$part''', vars = locals())
+            part_posts = convert_db_dic(part_posts)
+            part_hottness = datetime.timedelta.max
+            if not part_posts:
+                continue
             for post in part_posts:
-                last_comment = Comment(post[id])
+                # print(post)
+                last_comment = Comment(int(post['id'])).last()
+                if not last_comment:
+                    continue
+                hotness = last_comment['time'] - post['time']
+                if hotness < part_hottness:
+                    part_hottness = hotness
+                    hot_post[part] = post
+        for post in hot_post.values():
+            reply_user = db.query('''SELECT DISTINCT comments.user_id
+                FROM comments
+                WHERE comments.parent_id=%ld'''% post['id'])
+            reply_user = convert_db_dic(reply_user)
+            hot_post_reply_user[post['part']] = reply_user
+        return hot_post, hot_post_reply_user
+        # return instance 
+
+    @staticmethod
+    def more_active(partA, partB):
+        active_users = []
+        users = convert_db_dic(db.query('''SELECT users.id, users.name, users.nickname
+            FROM users'''))
+        for user in users:
+            tmp_id = user['id']
+            numA = convert_db_dic(db.query('''SELECT COUNT(*) from posts where posts.user_id=%d AND posts.part=$partA'''%tmp_id, vars = locals()))
+            numA = numA[0]['COUNT(*)']
+
+            numB = convert_db_dic(db.query('''SELECT COUNT(*) from posts where posts.user_id=%d AND posts.part=$partB'''%tmp_id, vars = locals()))
+            numB = numB[0]['COUNT(*)']
+            if numA > numB:
+                active_users.append(user)
+        return active_users
 
 
 
@@ -319,7 +428,14 @@ class Comment:
     def __init__(self, post_id):
         '''一个Comment实例只对应一篇文章'''
         self.__parent_id = post_id
-
+    def curlayer(self):
+        layer = db.query('''SELECT layer
+                    FROM comments
+                    WHERE comments.id=(SELECT MAX(id) FROM comments WHERE parent_id=%d)''' % self.__parent_id)
+        if layer:   
+            return layer[0]['layer']
+        else :
+            return 0
     def quote(self, comments):
         '''为每个评论获取父评论（即引用，只处理一级）'''
         comments_with_quote = []
@@ -337,18 +453,21 @@ class Comment:
                     quote_content = q.content
                     quote_username = q.username
                     quote_user_id = q.user_id
+            if c.layer == None:
+                c.layer = 0
             comments_with_quote.append({'id': c.id, 'content': c.content, 'user_id': c.user_id, 'username': c.username,
                                         'user_face': c.user_face, 'time': c.time, 'quote_content': quote_content,
-                                        'quote_username': quote_username, 'quote_user_id': quote_user_id})
+                                        'quote_username': quote_username, 'quote_user_id': quote_user_id,'layer':c.layer})
         return comments_with_quote
 
-    def new(self, content, user_id, quote_id = -1):
+    def new(self, content, user_id, layer,quote_id = -1):
         try:
-            if quote_id == -1:
-                return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id)
+            if quote_id == '0':
+                #print("are you heare?")
+                return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id, layer = layer, like_count = 0)
             # not quote_id !
             else:
-                return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id, quote_id=quote_id)
+                return db.insert('comments', content=content, user_id=user_id, parent_id=self.__parent_id, quote_id=quote_id,layer = layer,like_count = 0)
         except Exception, e:
             print e
             return 0
@@ -362,7 +481,7 @@ class Comment:
 
     def list(self):
         '''获取当前文章（创建Comment实例时指定了post_id）下面的所有评论'''
-        comments = db.query('''SELECT comments.id, content, comments.time, users.name AS username, user_id, quote_id, users.picture AS user_face
+        comments = db.query('''SELECT comments.id, content, comments.time, users.name AS username, user_id, quote_id, users.picture AS user_face, comments.layer
                                FROM comments JOIN users
                                ON comments.user_id = users.id
                                WHERE comments.parent_id=%d
@@ -386,12 +505,12 @@ class Comment:
         '''获取当前文章下面的评论总数'''
         return db.query("SELECT COUNT(*) AS count FROM comments WHERE parent_id=%d" % self.__parent_id)[0].count
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
     #post = Post().new('title', 10, 1)
     #a = User().post_number(1)
     #b = User().fuction_2('A')
     #print()
-    print(Post.function_4('A'))
+    #print(Post.function_4('A'))
     #print(a[0]['count(*)'])
     #comment = Comment(3).new(10, 1)
     #a = Comment(3).last()
